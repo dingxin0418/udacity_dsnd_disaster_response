@@ -1,8 +1,8 @@
 # 灾害因对通道
 ## 里头有啥
-1. etl管道文件process_data.py，用于清洗数据，message数据打标分类存入数据库用于后续模型训练
-2. nlp管道train_classifier.py，使用`tokenize()`进行分词，tfidf词向量化处理后，进行模型训练
-3. run.py运行程序，本地生成html包含可视化工具和信息预测
+1. etl管道文件`process_data.py`，用于清洗数据，message数据打标分类存入数据库用于后续模型训练
+2. nlp管道`train_classifier.py`，使用`tokenize()`进行分词，tfidf词向量化处理后，进行模型训练
+3. 运行`run.py`程序，本地生成html包含可视化工具和信息预测
 ## 如何使用
 1. 在根目录下运行下列指令建立你的模型和数据库
     - 执行ETL pipeline 做数据清洗，并储存于数据库中
