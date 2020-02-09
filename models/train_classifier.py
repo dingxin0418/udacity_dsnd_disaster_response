@@ -16,6 +16,11 @@ from sklearn.model_selection import GridSearchCV
 import pickle
 
 def load_data(database_filepath):
+    """
+    读取数据
+    :database_filepath: 数据库路径
+    :return: X (分词信息), y(标签信息), catgory_names
+    """
     engine = create_engine('sqlite:///'+database_filepath)
     df = pd.read_sql('select * from InsertTableName where related is not null ', engine)  
     X = df.message.values
@@ -25,6 +30,11 @@ def load_data(database_filepath):
     return X, y, category_names
 
 def tokenize(text):
+    """
+    分词
+    :text:信息数据
+    :return: 分词结果列表
+    """
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -37,6 +47,7 @@ def tokenize(text):
 
 
 def build_model():
+    """搭建模型管道"""
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -55,6 +66,14 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    模型评估
+    :model: 分类模型
+    :X_test: 测试数据
+    :Y_test: 测试标签
+    :category_names:分类数据
+    :return:模型结果报告
+    """
     y_pred = model.predict(X_test)
 
     for i in range(36):
@@ -62,6 +81,11 @@ def evaluate_model(model, X_test, Y_test, category_names):
         print(classification_report(Y_test.T[i], y_pred.T[i]))
 
 def save_model(model, model_filepath):
+    """
+    储存模型
+    :model: 模型
+    :model_filepath: pkl文件储存路径
+    """
     with open(model_filepath, 'wb') as fid:
         pickle.dump(model, fid)  
 
@@ -71,28 +95,4 @@ def main():
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
-        print('Building model...')
-        model = build_model()
-        
-        print('Training model...')
-        model.fit(X_train, Y_train)
-        
-        print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test, category_names)
-
-        print('Saving model...\n    MODEL: {}'.format(model_filepath))
-        save_model(model, model_filepath)
-
-        print('Trained model saved!')
-
-    else:
-        print('Please provide the filepath of the disaster messages database '\
-              'as the first argument and the filepath of the pickle file to '\
-              'save the model to as the second argument. \n\nExample: python '\
-              'train_classifier.py ../data/DisasterResponse.db classifier.pkl')
-
-
-if __name__ == '__main__':
-    main()
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, 
