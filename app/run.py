@@ -7,7 +7,7 @@ from nltk.tokenize import word_tokenize
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from plotly.graph_objs import Bar, Pie
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
@@ -15,6 +15,11 @@ from sqlalchemy import create_engine
 app = Flask(__name__)
 
 def tokenize(text):
+    """分词函数
+    
+    text --分词对象
+    
+    """
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -26,25 +31,27 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/DisasterResponse.db')
+engine = create_engine('sqlite:///data/DisasterResponse.db')
 df = pd.read_sql_table('InsertTableName', engine)
 
 # load model
-model = joblib.load("../models/classifier.pkl")
+model = joblib.load("models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
+
 def index():
-    
+    """输出可视化"""
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     genre_counts2=df[['medical_help','medical_products']].sum()
     genre_names2 = ['medical_help','medical_products']
-    
+    genre_counts3=df[['earthquake','storm']].sum()
+    genre_names3 = ['earthquake','storm']
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
@@ -70,10 +77,8 @@ def index():
         ,
        {
             'data': [
-                Bar(
-                    x=genre_names2,
-                    y=genre_counts2
-                )
+                Pie(labels=genre_names2,
+                    values=genre_counts2)
             ],
 
             'layout': {
@@ -86,6 +91,25 @@ def index():
                 }
             }
         } 
+       ,
+        {
+            'data': [
+                Bar(
+                    x=genre_names3,
+                    y=genre_counts3
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of apocalyptic disasters',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Genre"
+                }
+            }
+        }
     ]
     
     # encode plotly graphs in JSON
@@ -100,6 +124,7 @@ def index():
 
 @app.route('/go')
 def go():
+    "预测message输出预测结果"
     # save user input in query
     query = request.args.get('query', '') 
 
