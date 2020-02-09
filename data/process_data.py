@@ -3,6 +3,12 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    将2组数据合并
+    :param messages_filepath: 信息数据路径
+    :param categories_filepath: 分类数据路径
+    :return: 合并数据集 (pandas.DataFrame)
+    """
     # load messages dataset
     messages = pd.read_csv(messages_filepath)
     
@@ -35,11 +41,17 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """清洗数据：去重"""
     df.drop_duplicates(inplace=True)
     return df
 
 
 def save_data(df, database_filename):
+    """
+    创建数据库
+    :df: 数据集
+    :database_filename: 数据库名
+    """
     engine = create_engine('sqlite:///'+database_filename)
     df.to_sql('InsertTableName', engine, index=False)  
 
