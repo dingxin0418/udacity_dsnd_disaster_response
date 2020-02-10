@@ -7,7 +7,7 @@
 1. 在根目录下运行下列指令建立你的模型和数据库
     - 执行ETL pipeline 做数据清洗，并储存于数据库中
     
-        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/sqlite:///DisasterResponse.db`
+        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db`
     - 执行nlp管道输出模型
     
         `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
